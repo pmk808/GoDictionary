@@ -14,7 +14,10 @@
 }
 
 .App-header {
-  background-color: #282c34;
+  /* Remove or change this line */
+  /* background-color: #282c34; */
+  /* You can set it to transparent if you want to keep the layout */
+  background-color: transparent; 
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -35,4 +38,9 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+/* Add this new class */
+.vintage-background {
+  background-color: #fbf7d9; /* Light yellow color */
 }

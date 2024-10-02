@@ -5,9 +5,29 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: #fbf7d9; /* Set the body background to light yellow */
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+.text-center {
+    text-align: center; /* Center the text */
+    margin: 0 auto; /* Center the list itself */
+    display: flex; /* Use flexbox for centering */
+    flex-direction: column; /* Stack items vertically */
+    align-items: center; /* Center items horizontally */
+}
+
+.list-decimal, .list-disc {
+    display: flex; /* Use flexbox for the list */
+    flex-direction: column; /* Stack items vertically */
+    align-items: center; /* Center items horizontally */
+    padding-left: 0; /* Remove default padding */
+}
+
+.list-inside {
+    padding-left: 0; /* Remove default padding */
 }
