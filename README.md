@@ -7,6 +7,7 @@ GoDictionary is a simple dictionary application that allows users to search for 
 - Display pronunciations in standard and IPA formats.
 - Provide audio pronunciations for words.
 - List idioms related to the searched word.
+- Save words to a list and view saved words without refreshing the page.
 
 ## Technologies Used
 - **Frontend**: React, CSS
@@ -65,33 +66,14 @@ GoDictionary is a simple dictionary application that allows users to search for 
   - `text`: The word to look up.
 - **Response**: Returns a JSON object containing the word's definitions, pronunciations, idioms, and audio links.
 
+### `GET /saved-words`
+- **Description**: Retrieves a list of saved words.
+- **Response**: Returns a JSON array of saved words, including their meanings, pronunciations, and the date they were saved.
+
 ### Example Request
 
 - GET http://localhost:8080/word?text=example
-
-
-### Example Response
-
-- json
-```{
-"text": "example",
-"pronunciations": ["ig-zam-puhl"],
-"ipaPronunciation": "/ɪɡˈzæmpəl/",
-"audioPronunciations": ["audio1", "audio2"],
-"definitions": [
-{
-"partOfSpeech": "noun",
-"senses": ["a representative form or pattern", "something to be imitated"]
-}
-],
-"idioms": [
-{
-"phrase": "for example",
-"senses": ["used to introduce a case or instance"]
-}
-]
-}
-```
+- GET http://localhost:8080/saved-words
 
 ## Contributing
 Contributions are welcome! Please feel free to submit a pull request or open an issue for any suggestions or improvements.
