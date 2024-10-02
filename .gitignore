@@ -18,7 +18,7 @@ node_modules/
 .env.production.local
 
 # Ignore saved words JSON file
-saved_words.json
+/backend/saved_words.json
 
 npm-debug.log*
 yarn-debug.log*
