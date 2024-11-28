@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import SavedWordsList from './SavedWordsList';
 
+// Import environment variables (e.g., using dotenv in development)
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080';
+const AUDIO_BASE_URL = process.env.REACT_APP_AUDIO_BASE_URL || 'https://media.example.com/audio/prons/en/us/mp3';
+
 function Dictionary() {
     const [word, setWord] = useState('');
     const [result, setResult] = useState(null);
@@ -16,7 +20,7 @@ function Dictionary() {
 
     const fetchSavedWords = async () => {
         try {
-            const response = await fetch('http://localhost:8080/saved-words'); // Ensure this URL is correct
+            const response = await fetch(`${API_BASE_URL}/saved-words`);
             if (!response.ok) {
                 throw new Error('Error fetching saved words');
             }
@@ -34,16 +38,17 @@ function Dictionary() {
         setError(null);
         setResult(null);
         try {
-            const response = await fetch(`http://localhost:8080/word?text=${word}`);
+            const response = await fetch(`${API_BASE_URL}/word?text=${word}`);
             if (!response.ok) {
                 throw new Error('Word not found');
             }
             const data = await response.json();
             setResult(data);
+
             // Generate audio sources
             if (data.audioPronunciations && data.audioPronunciations.length > 0) {
                 const sources = data.audioPronunciations.map(audio =>
-                    `https://media.merriam-webster.com/audio/prons/en/us/mp3/${audio[0]}/${audio}.mp3`
+                    `${AUDIO_BASE_URL}/${audio[0]}/${audio}.mp3`
                 );
                 setAudioSources(sources);
             }
@@ -57,27 +62,30 @@ function Dictionary() {
 
     const handleSaveWord = async () => {
         try {
-            const meanings = result.definitions.flatMap(def => def.senses); // Get meanings
-            const pronunciations = result.pronunciations; // Get pronunciations
+            const meanings = result.definitions.flatMap(def => def.senses);
+            const pronunciations = result.pronunciations;
 
-            const response = await fetch(`http://localhost:8080/save?word=${word}&meanings=${JSON.stringify(meanings)}&pronunciations=${JSON.stringify(pronunciations)}`, {
-                method: 'GET',
+            const response = await fetch(`${API_BASE_URL}/save`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    word,
+                    meanings,
+                    pronunciations,
+                }),
             });
             if (!response.ok) {
                 throw new Error('Error saving word');
             }
 
-            // Create a new saved word object
-            const newSavedWord = {
-                word: word,
-                meanings: meanings,
-                pronunciations: pronunciations,
-                savedDate: new Date().toLocaleString(), // Format the date as needed
-            };
-
             // Update the savedWords state
+            const newSavedWord = {
+                word,
+                meanings,
+                pronunciations,
+                savedDate: new Date().toLocaleString(),
+            };
             setSavedWords(prevSavedWords => [...prevSavedWords, newSavedWord]);
-
             alert('Word saved successfully!');
         } catch (error) {
             console.error('Error:', error);
@@ -115,11 +123,8 @@ function Dictionary() {
                 <div className="bg-white p-4 rounded-lg shadow-md">
                     <h2 className="text-3xl font-bold mb-4 text-blue-800">{result.text}</h2>
                     <button onClick={handleSaveWord} className="bg-green-500 text-white p-2 rounded hover:bg-green-600">Save Word</button>
-                    {result.pronunciations && result.pronunciations.length > 0 && (
+                    {result.pronunciations && (
                         <p className="mb-2"><strong>Pronunciation:</strong> {result.pronunciations.join(', ')}</p>
-                    )}
-                    {result.ipaPronunciation && (
-                        <p className="mb-2"><strong>IPA Pronunciation:</strong> /{result.ipaPronunciation}/</p>
                     )}
                     {audioSources.length > 0 && (
                         <div className="mb-2">
@@ -129,35 +134,6 @@ function Dictionary() {
                                     <source src={src} type="audio/mpeg" />
                                     Your browser does not support the audio element.
                                 </audio>
-                            ))}
-                        </div>
-                    )}
-                    {result.definitions && result.definitions.length > 0 && result.definitions.map((def, index) => (
-                        <div key={index} className="mb-4">
-                            <h3 className="text-xl font-semibold">{def.partOfSpeech}</h3>
-                            {def.senses && def.senses.length > 0 && (
-                                <ol className="list-decimal text-center">
-                                    {def.senses.map((sense, i) => (
-                                        <li key={i}>{sense}</li>
-                                    ))}
-                                </ol>
-                            )}
-                        </div>
-                    ))}
-                    {result.idioms && result.idioms.length > 0 && (
-                        <div className="mb-4">
-                            <h3 className="text-xl font-semibold">Idioms</h3>
-                            {result.idioms.map((idiom, index) => (
-                                <div key={index} className="mb-2">
-                                    <h4 className="font-semibold">{idiom.phrase}</h4>
-                                    {idiom.senses && idiom.senses.length > 0 && (
-                                        <ul className="list-disc text-center">
-                                            {idiom.senses.map((sense, i) => (
-                                                <li key={i}>{sense}</li>
-                                            ))}
-                                        </ul>
-                                    )}
-                                </div>
                             ))}
                         </div>
                     )}
